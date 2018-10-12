@@ -12,30 +12,30 @@ cursor = conn.cursor()
 
 
 def select_categories(dict_categories):
-    """Affiche 10 catégories"""
-    # L'utilisateur doit entrer un catégorie
     recherche_utilisateur = ""
-    while recherche_utilisateur == "":
-        recherche_utilisateur = input("Entrez la catégorie à trouver:\n")
-        if recherche_utilisateur == "":
-            print(" Vous n'avez rien écrit!")
-        else:
-            formater_recherche = "%" + recherche_utilisateur + "%"
-            # requete SQL pour sélectionner les 10 catégories
-            cursor.execute("""USE Openfoodfacts""")
-            cursor.execute("""SELECT DISTINCT name FROM Categories\
-            WHERE name LIKE %s """, (formater_recherche))
-            categories = cursor.fetchall()
 
-            # remplir le dict_categories avec le resultat de la recherche
-            print("Voici les catégories comprenant votre recherche:")
-            index = 1
-            for i in categories:
-                categories_affich = cl.Categories(i, index)
-                dict_categories[categories_affich.index] = (categories_affich.name, categories_affich.id)
-                print(index, " : ", categories_affich.name)
-                index += 1
-            return dict_categories
+    category0 = ("Veloutés de légumes")
+    category1 = ("sandwichs garnis de charcuteries")
+    category2 = ("gratins")
+    category3 = ("nouilles instantanees")
+    category4 = ("batonnets glaces")
+    cursor.execute("""USE Openfoodfacts""")
+    cursor.execute("""SELECT DISTINCT name FROM Categories\
+    WHERE name LIKE %s OR name LIKE %s OR name LIKE %s OR name LIKE %s OR name LIKE %s""",\
+    (category0, category1, category2, category3, category4))
+    categories = cursor.fetchall()
+
+
+    # remplir le dict_categories avec le resultat de la recherche
+    print("Voici les 5 catégories permettant une recherche:")
+    index = 1
+    for i in categories:
+        categories_affich = cl.Categories(i, index)
+        dict_categories[categories_affich.index] = (categories_affich.name, categories_affich.id)
+        print(index, " : ", categories_affich.name)
+        index += 1
+    return dict_categories
+
 
 
 def trouver_un_susbstitut():
@@ -46,8 +46,6 @@ def trouver_un_susbstitut():
     while len(dict_produit) == 0:
         while dict_categories == {}:
             select_categories(dict_categories)
-            if dict_categories == {}:
-                print("Désolé cette recherche ne trouve pas de catégories, essayez à nouveau:")
         choix = user_choix_input(len(dict_categories))
 
         # Affiche une liste de produits contenus dans la catégorie choisie
