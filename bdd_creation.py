@@ -40,14 +40,16 @@ ALTER TABLE Backup ADD CONSTRAINT fk_substitut_id FOREIGN KEY (substitut_id) REF
 
 """
 
-CATEGORIES = ["https://fr.openfoodfacts.org/categorie/biscuits-aperitifs/", \
-              "https://fr.openfoodfacts.org/categorie/Boeuf/", \
-              "https://fr.openfoodfacts.org/categorie/Chips/", \
-              "https://fr.openfoodfacts.org/categorie/Legumes-frais/", \
-              "https://fr.openfoodfacts.org/categorie/Patisseries/"]
+CATEGORIES = ["https://fr.openfoodfacts.org/categorie/veloutes/", \
+              "https://fr.openfoodfacts.org/categorie/sandwichs-garnis-de-charcuteries/", \
+              "https://fr.openfoodfacts.org/categorie/plats-a-base-de-canard/", \
+              "https://fr.openfoodfacts.org/categorie/nouilles-instantanees/", \
+              "https://fr.openfoodfacts.org/categorie/batonnets-glaces/"]
+
+Categ = "https://fr.openfoodfacts.org/categories/.json"
+
 
 nouvelle_liste_url = []
-url_format = []
 
 # connection à la base de données
 conn = pymysql.connect(host='localhost', user='root', passwd='', db='Openfoodfacts', charset='utf8')
@@ -63,7 +65,7 @@ def recup_data_api(url):
 
 
 def remplir_table_categorie():
-    data_from_cat = {}
+    url_format = []
     for elt in CATEGORIES:  # pour chaque elt de ma liste
         url_format.append(elt + (str(".json")))
     print(url_format)
@@ -92,93 +94,13 @@ def remplir_table_categorie():
                     pass
 
 
-def remplir_table_categorie2():
-    page_cat_data = recup_data_api()
-    valeur = list(page_cat_data.values())
-
-    # print("le nombre d'items est:")
-    # print(len(valeur))
-    # print("Le type de 'valeur' est:")
-    # print(type(valeur))
-    print(valeur[1])
-    for i in CATEGORIES:
-        liste_url = set(valeur[1]).intersection(CATEGORIES)  # comparer deux listes
-        print(liste_url)
-
-    # for value in page_cat_data:
-    #     valeur = list(page_cat_data)
-    # print("le nombre d'items est:")
-    # print(len(valeur))
-    #
-    # print("Le type de 'valeur' est:")
-    # print(type(valeur))
-    #
-    # print("valeur1: \n")
-    # print(valeur[0])
-    # print("valeur: \n")
-    # print(valeur[1])
-
-    # for key, value in valeur.iteritems():
-    #     val = value
-    #     cle = key
-    #     data_cle.append(cle)
-    #     data_value.append(val)
-    # print(data_value)
-
-    #
-    # print("Le type de valeur est:")
-
-    # for i in range(0,2):
-    #     print("valeur: \n")
-    #     print(valeur[i])
-    # print(type(valeur))
-
-    # print(valeur)
-
-    # liste_url = set(liste_valeur).intersection(CATEGORIES) # comparer deux listes
-
-    #     for url in valeur:
-    #
-    #         print(url)
-    #
-    #     for elt in range(len(CATEGORIES)):
-    #         if str(valeur) in CATEGORIES[elt]:
-    #             url_cle.append(str(valeur))
-    #             print ("remplissage de la liste")
-    #
-    #     for i in CATEGORIES:
-    #         for j in url_cle:
-    #             liste_url.append(set(i).intersection(j))
-    #             # if [j] in url_cle == [i] in CATEGORIES:
-    #             #     liste_url.append(url_cle)
-    #         else:
-    #             pass
-    #
-    # print("Il y a:{} url en tout".format(len(url_cle)))
-    # print("la liste:")
-    # print(liste_url)
-    # print("Il y a : {} url dans la liste".format(nombre_durl))
-
-    # for i in page_cat_data["tags"][0]["url"]:
-    #     return "url"
-
-    # print (page_cat_data)
-    # for i in CATEGORIES:
-    #     for cle in page_cat_data:
-    #         print(cle)
-    #         if page_cat_data["tags"][0]["url"] == CATEGORIES[i]:
-    #             liste_url().append(keys)
-    #             print(liste_url)
-
 
 def lister_url():
     data_from_list = {}
     for elt in CATEGORIES:  # pour chaque elt de ma liste
-        # print(elt)
-        for i in range(1, 3):  # generation d'un boucle avec i comme iterateur de 0 à 1133
+        for i in range(1, 16):  # generation d'un boucle avec i comme iterateur de 0 à 15 (311 produits max)
             nouvelle_liste_url.append('{0}{1}.json'.format(elt, str(
-                i)))  # formatage des url 1133 fois(nombre de pages max dans une catégories)\
-            # + ajout à nouvelle liste
+                i)))  #  ajout à nouvelle liste
             # print(str(nouvelle_liste_url))
     for elt in nouvelle_liste_url:  # pour chaque elt de
         print("récupération des produits en cours")
@@ -216,15 +138,7 @@ def insert_product():
                                (food.name, category[0], food.nutri_score, food.url, food.stores))
                 conn.commit()
                 print("Produit correctement insérée")
-            except conn.OperationalError:  # Don't take the products with encoding error
-                pass
-            except KeyError:  # Don't take lignes without 'product_name'
-                pass
-            except AttributeError:  # Don't take products with 0 categories
-                pass
-            except conn.IntegrityError:  # Don't take the products with an category unknow in the database
-                pass
-            except conn.DataError:  # Pass when product name is too long
+            except (conn.OperationalError, conn.DataError, conn.IntegrityError, KeyError):
                 pass
 
 
@@ -242,3 +156,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
