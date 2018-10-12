@@ -35,6 +35,7 @@ CREATE TABLE Backup(
     )ENGINE=InnoDB;
     
 ALTER TABLE Categories ADD UNIQUE INDEX(name);
+ALTER TABLE Food ADD UNIQUE INDEX(name);
 ALTER TABLE Backup ADD CONSTRAINT fk_produit_id FOREIGN KEY (produit_id) REFERENCES Food(id);
 ALTER TABLE Backup ADD CONSTRAINT fk_substitut_id FOREIGN KEY (substitut_id) REFERENCES Food(id);
 
@@ -42,7 +43,7 @@ ALTER TABLE Backup ADD CONSTRAINT fk_substitut_id FOREIGN KEY (substitut_id) REF
 
 CATEGORIES = ["https://fr.openfoodfacts.org/categorie/veloutes/", \
               "https://fr.openfoodfacts.org/categorie/sandwichs-garnis-de-charcuteries/", \
-              "https://fr.openfoodfacts.org/categorie/plats-a-base-de-canard/", \
+              "https://fr.openfoodfacts.org/categorie/gratins/", \
               "https://fr.openfoodfacts.org/categorie/nouilles-instantanees/", \
               "https://fr.openfoodfacts.org/categorie/batonnets-glaces/"]
 
