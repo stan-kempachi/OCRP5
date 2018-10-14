@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import re
+
 
 """Ce fichier contient des classes représentant la base de données de ce programme"""
 
@@ -32,6 +34,7 @@ class Food():
             self.name = data_from_off["product_name_fr"]
             try:
                 self.category = data_from_off["categories"]
+
             except IndexError:
                 pass
             try:
