@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import pymysql.cursors
-import re
 import Classe as cl
 
 # connection à la base de données
@@ -14,7 +13,7 @@ def select_categories(dict_categories):
     recherche_utilisateur = ""
 
     category0 = ("veloutes")
-    category1 = ("sandwichs")
+    category1 = ("sandwichs garnis de charcuteries")
     category2 = ("gratins")
     category3 = ("nouilles instantanees")
     category4 = ("batonnets glaces")
@@ -65,12 +64,13 @@ def trouver_un_susbstitut():
     print_produit(produit_choisi)
 
     # Rechercher un substitut et l'afficher
-    print('\n Vous pouvez remplacer ce produit par : \n')
-    substitut = recherche_substitut(produit_choisi)
+
     try:
+        substitut = recherche_substitut(produit_choisi)
+        print('\n Vous pouvez remplacer ce produit par : \n')
         print_produit(substitut)
         ajout_backup(produit_choisi, substitut)
-    except AttributeError:
+    except (AttributeError, TypeError):
         pass
 
 
@@ -116,14 +116,18 @@ def user_choix_input(nombre_de_choix):
 
 
 def print_produit(produit):
-
     """Prend un produit et affiche ses caractéristiques"""
-    print("\n \
-    Name : {} \n \
-    Categories : {} \n \
-    Nutri-score : {} \n \
-    Store : {} \n \
-    URL : {}".format(produit.name[1], produit.category[2], produit.nutri_score[3], produit.stores[5], produit.url[4]))
+    try:
+        print("\n \
+        Name : {} \n \
+        Categories : {} \n \
+        Nutri-score : {} \n \
+        Store : {} \n \
+        URL : {}".format(produit.name[1], produit.name[2], produit.name[3], produit.name[5], produit.name[4]))
+    except TypeError:
+        print("Désolé, il n'y a pas de substitut pour ce produit...")
+
+        
 
 
 def ajout_backup(produit, substitut):
@@ -185,11 +189,12 @@ def extraire_produit(produit):
     cursor.execute("""SELECT Food.id, Food.name, categories_id, nutri_score, url, stores \
      FROM Food \
      INNER JOIN Categories ON Food.categories_id LIKE Categories.name\
-     WHERE Food.name LIKE %s;""", (produit,))
-
+     WHERE Food.name LIKE %s;""", (produit))
     produit = cursor.fetchone()
     produit_class = cl.Food(produit)
     return produit_class
+
+
 
 
 def affiche_favoris():
