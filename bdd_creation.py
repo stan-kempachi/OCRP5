@@ -59,10 +59,10 @@ def recup_data_api(url):
     data = requests.get(url)
     data.encoding = "utf8"
     return data.json()
-    print(data)
 
 
 def remplir_table_categorie():
+    """"Fonction qui remplit la table Categories"""
     url_format = []
     for elt in CATEGORIES:  # pour chaque elt de ma liste
         url_format.append(elt + (str(".json")))
@@ -93,7 +93,7 @@ def remplir_table_categorie():
 
 
 def lister_url():
-    data_from_list = []
+    "Fonction qui crée une liste d'URL et l'enregistre dans une liste"
     for elt in CATEGORIES:  # pour chaque elt de ma liste
         for i in range(1, 16):  # generation d'un boucle avec i comme iterateur de 0 à 15 (311 produits max)
             nouvelle_liste_url.append('{0}{1}.json'.format(elt, str(
@@ -102,6 +102,7 @@ def lister_url():
 
 
 def insert_product():
+    """"Fonction qui insert les produits dans la table Food"""
     for elt in nouvelle_liste_url:
         print(elt)
         data_from_list = recup_data_api(elt)
@@ -109,34 +110,18 @@ def insert_product():
         for data in data_from_list["products"]:
             if "en:" in ["categories"]:  # On ne prend pas celles en anglais
                 pass
-        for data in data_from_list["products"]:
-            for rows in ['categories_tags']:
-                    if 'fr:' in rows:
-                        rows.replace("-"," ")
-                        return food.category
-            try:
-                nutri_values = ["a", "b", "c", "d", "e"]
-                nutri_score = []
-                for nutri_values in data_from_list["nutrition_grade_fr"]:
-                    nutri_score.append(nutri_values)
-                return food.nutri_score
-
-                
-            except KeyError:
-                str_nutr_grade = "N/A"
-                nutriscore = 0
+            if ' "",' in ["stores"]: #On ne prend pas ceux qui sont vides
                 pass
-            try:
-
-                food = cl.Food(data)
-
-                cursor.execute("INSERT INTO Food (name, categories_id, nutri_score, url, stores)" \
-                               "VALUES (%s, %s, %s, %s, %s)",
-                               (food.name, food.category, food.nutri_score, food.url, food.stores))
-                conn.commit()
-                print("Produit correctement insérée")
-            except (conn.OperationalError, conn.DataError, conn.IntegrityError, KeyError, AttributeError):
-                pass
+            else:
+                try:
+                    food = cl.Food(data)
+                    cursor.execute("INSERT INTO Food (name, categories_id, nutri_score, url, stores)" \
+                                   "VALUES (%s, %s, %s, %s, %s)",
+                                   (food.name, food.category, food.nutri_score, food.url, food.stores))
+                    conn.commit()
+                    print("Produit correctement insérée")
+                except (conn.OperationalError, conn.DataError, conn.IntegrityError, KeyError, AttributeError):
+                    pass
 
 
 def main():
