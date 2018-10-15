@@ -5,7 +5,6 @@
 # import pip module
 import pymysql.cursors
 import requests, json
-import re
 
 # import personnal module
 import Classe as cl
@@ -94,21 +93,15 @@ def remplir_table_categorie():
 
 
 def lister_url():
-    data_from_list = {}
+    data_from_list = []
     for elt in CATEGORIES:  # pour chaque elt de ma liste
         for i in range(1, 16):  # generation d'un boucle avec i comme iterateur de 0 à 15 (311 produits max)
             nouvelle_liste_url.append('{0}{1}.json'.format(elt, str(
                 i)))  # ajout à nouvelle liste
-            # print(str(nouvelle_liste_url))
-    for elt in nouvelle_liste_url:  # pour chaque elt de
-        print("récupération des produits en cours")
-        recup_data_api(elt)
-        return data_from_list
-    print("Récupération terminée")
+
 
 
 def insert_product():
-    lister_url()
     for elt in nouvelle_liste_url:
         print(elt)
         data_from_list = recup_data_api(elt)
@@ -153,6 +146,7 @@ def main():
     print("Base de données Openfoodfacts créé avec succès !")
 
     cursor.execute('use openfoodfacts;')
+    lister_url()
     remplir_table_categorie()
     insert_product()
     print("Base de données Openfoodfacts remplie avec succès !")
