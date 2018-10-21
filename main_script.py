@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import pymysql.cursors
-import Classe as cl
+import classe as cl
+
 
 # connection à la base de données
 conn = pymysql.connect(host='localhost', user='root', passwd='', db='Openfoodfacts', charset='utf8')
@@ -15,7 +16,7 @@ def select_categories(dict_categories):
     category0 = ("veloutes")
     category1 = ("sandwichs garnis de charcuteries")
     category2 = ("gratins")
-    category3 = ("nouilles instantanees")
+    category3 = ("yaourts a boire")
     category4 = ("batonnets glaces")
     cursor.execute("""USE Openfoodfacts""")
     cursor.execute("""SELECT name FROM Categories\
@@ -57,14 +58,13 @@ def trouver_un_susbstitut():
 
     choix = user_choix_input(len(dict_produit))
 
-    produit_choisi = extraire_produit(dict_produit[choix][1])
+    produit_choisi = extraire_produit(dict_produit[choix])
 
     # Afficher la description du produit choisi
     print('\n Vous avez choisi ce produit : \n')
     print_produit(produit_choisi)
 
     # Rechercher un substitut et l'afficher
-
     try:
         substitut = recherche_substitut(produit_choisi)
         print('\n Vous pouvez remplacer ce produit par : \n')
@@ -95,7 +95,7 @@ Utiliser le résultat de la fonction de sélection des produits et l'afficher"""
     for i in produits:
         affiche_produits = cl.Food(i, index)
         dict_produit[affiche_produits.index] = affiche_produits.name
-        print(index, " : ", affiche_produits.name[1])
+        print(index, " : ", affiche_produits.name)
         index += 1
     return dict_produit
 
@@ -123,11 +123,9 @@ def print_produit(produit):
         Categories : {} \n \
         Nutri-score : {} \n \
         Store : {} \n \
-        URL : {}".format(produit.name[1], produit.name[2], produit.name[3], produit.name[5], produit.name[4]))
+        URL : {}".format(produit.name, produit.category, produit.nutri_score, produit.stores, produit.url))
     except TypeError:
         print("Désolé, il n'y a pas de substitut pour ce produit...")
-
-        
 
 
 def ajout_backup(produit, substitut):
@@ -161,16 +159,15 @@ def affiche_liste_produit(produit):
 
 
 def recherche_substitut(produit):
-
     """Rechercher un substitut du produit dans la base de données"""
     cursor.execute('USE openfoodfacts;')
     # Faire une chaîne avec la catégories, utilisées dans la requête
-    recherche = produit.category[2]
+    recherche = produit.category
     # Autre variable
-    produit_name = produit.name[1]
-    produit_score = produit.nutri_score[3]
+    produit_name = produit.name
+    produit_score = produit.nutri_score
 
-    cursor.execute("""SELECT Food.id, Food.name, categories_id, nutri_score, stores, url \
+    cursor.execute("""SELECT Food.id, Food.name, categories_id, nutri_score, url, stores \
      FROM Food \
      INNER JOIN Categories ON Food.categories_id = Categories.name\
      WHERE categories_id LIKE %s AND Food.name NOT LIKE %s \
@@ -180,6 +177,7 @@ def recherche_substitut(produit):
         return cl.Food(substitut)
     except TypeError:
         print("Désolé, il n'y a pas de substitut pour ce produit...")
+
 
 def extraire_produit(produit):
     """Prendre le nom d'un produit et renvoyer un objet
@@ -195,16 +193,12 @@ def extraire_produit(produit):
     return produit_class
 
 
-
-
 def affiche_favoris():
     """Afficher tous les favoris de l'utilisateur"""
     # Liste des favoris utilisés pour la fonction "select_favoris"
     favoris_dict = {}
     # pour les produits dans Count
     cursor.execute('USE openfoodfacts;')
-    # cursor.execute('SELECT COUNT(*) FROM Backup;')
-    # nb_favoris = cursor.fetchone()
     cursor.execute("""SELECT F1.name as Product, F2.name as Substitute \
         FROM Backup \
         INNER JOIN Food F1 ON Backup.produit_id = F1.id     
@@ -217,8 +211,12 @@ def affiche_favoris():
                                                              favoris_tuple[0], favoris_tuple[1]))
         favoris_dict[index] = favoris_tuple
         index += 1
-    print('Choisissez un chiffre pour plus de détail.')
-    select_favoris(favoris_dict)
+
+    if not favoris_dict:
+        print ("La liste des favoris est vide.")
+    else:
+        print('Choisissez un chiffre pour plus de détail.')
+        select_favoris(favoris_dict)
 
 
 def select_favoris(favoris_dict):
@@ -235,12 +233,12 @@ def select_favoris(favoris_dict):
 
 def main():
     """Fonction main du programme"""
-    print('Bienvenu sur notre application!')
+    print('Bienvenu sur notre application !')
     marche = True
     while marche is True:
         print(" _________________________________________ ")
-        print('|_____________MENU PRINCIPALE_____________|\n')
-        print('1. Choisir des aliments et les remplacer?')
+        print('|_____________MENU PRINCIPAL_____________|\n')
+        print('1. Choisir des aliments et les remplacer ?')
         print('2. Retrouver mes aliments substitués.')
         print('3. Exit.')
         choix = user_choix_input(3)
