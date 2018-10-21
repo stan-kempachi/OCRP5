@@ -2,19 +2,19 @@
 # -*- coding: utf-8 -*-
 
 
-"""Ce fichier contient des classes représentant la base de données de ce programme"""
+"""This file contains the classes of this program"""
 
 
 class Categories():
-    """Classe représentant la table 'Categories' de la base de données"""
+    """Class representing the 'Categories' table of the database"""
 
     def __init__(self, data_from_off, index=None):
-        """Initier un dictionnaire pour argument"""
-        # Utiliser la clé lors de la création de la base de données à partir de l'API OFF
+        """Initiate a dictionary for argument"""
+        # Use the key when creating the database from the OFF API
         try:
             self.id = data_from_off["id"]
             self.name = data_from_off["name"]
-        # Utilisez l'index lorsque l'on appel la classe depuis le programme
+            # Use the index when calling the class from the program
         except TypeError:
             self.id = data_from_off
             self.name = data_from_off[0]
@@ -22,12 +22,12 @@ class Categories():
 
 
 class Food():
-    """Classe représentant la table 'Food' de la base de données"""
+    """Class representing the 'Food' table of the database"""
 
     def __init__(self, data_from_off, index=None):
-        """Initier un dictionnaire pour argument"""
+        """Initiate a dictionary for argument"""
 
-        # Utiliser la clé lors de la création de la base de données à partir de l'API OFF
+        # Use the key when creating the database from the OFF API
         try:
             self.name = data_from_off["product_name"]
             try:

@@ -4,7 +4,7 @@
 
 # import pip module
 import pymysql.cursors
-import requests, json
+import requests
 
 # import personnal module
 import classe as cl
@@ -47,35 +47,35 @@ CATEGORIES = ["https://fr.openfoodfacts.org/categorie/veloutes/", \
               "https://fr.openfoodfacts.org/categorie/yaourts-a-boire/", \
               "https://fr.openfoodfacts.org/categorie/batonnets-glaces/"]
 CATEGORIES_URL = 'https://fr.openfoodfacts.org/categories.json'
-nouvelle_liste_url = []
+new_url_list = []
 
 category0 = ("Veloutés")
 category1 = ("Sandwichs garnis de charcuteries")
 category2 = ("Gratins")
 category3 = ("Yaourts à boire")
 category4 = ("Bâtonnets glacés")
-cat_liste = category0, category1, category2, category3, category4
+cat_list = category0, category1, category2, category3, category4
 
 
 
-# connection à la base de données
+# connection to the database
 conn = pymysql.connect(host='localhost', user='root', passwd='', db='Openfoodfacts', charset='utf8')
 cursor = conn.cursor()
 
 
-def recup_data_api(url):
+def take_data_api(url):
     """Take an url and return data"""
     data = requests.get(url)
     data.encoding = "utf8"
     return data.json()
 
 
-def remplir_table_categorie():
-    """"Fonction qui remplit la table Categories"""
-    data_from_cat = recup_data_api(CATEGORIES_URL)
+def fill_category():
+    """"Function that fills the table Categories"""
+    data_from_cat = take_data_api(CATEGORIES_URL)
     for data in data_from_cat["tags"]:
-        for i in cat_liste:
-            if data['name'] in cat_liste:
+        for i in cat_list:
+            if data['name'] in cat_list:
                 try:
                     category = cl.Categories(data)
                     cursor.execute("INSERT INTO Categories (id, name)" \
@@ -91,25 +91,25 @@ def remplir_table_categorie():
 
 
 def lister_url():
-    "Fonction qui crée une liste d'URL et l'enregistre dans une liste"
-    for elt in CATEGORIES:  # pour chaque elt de ma liste
-        for i in range(1, 16):  # generation d'un boucle avec i comme iterateur de 1 à 16 (311 produits max)
-            nouvelle_liste_url.append('{0}{1}.json'.format(elt, str(
-                i)))  # ajout à nouvelle liste
+    "Function that creates a list of URLs and saves it in a list"
+    for elt in CATEGORIES:
+        for i in range(1, 16):  # generation of a loop from 1 to 16 (311 products max)
+            new_url_list.append('{0}{1}.json'.format(elt, str(
+                i)))  # add to a new list
 
 
 
 def insert_product():
-    """"Fonction qui insert les produits dans la table Food"""
-    for elt in nouvelle_liste_url:
+    """"Function that inserts the products into the Food table"""
+    for elt in new_url_list:
         print(elt)
-        data_from_list = recup_data_api(elt)
+        data_from_list = take_data_api(elt)
 
         for data in data_from_list["products"]:
-            for j in cat_liste:
+            for j in cat_list:
                 data_cat = data['categories'].split(",")
             for i in data_cat:
-                if i in cat_liste:
+                if i in cat_list:
                     try:
                         food = cl.Food(data)
                         food.category = [i]
@@ -131,7 +131,7 @@ def main():
     cursor.execute('use openfoodfacts;')
 
     lister_url()
-    remplir_table_categorie()
+    fill_category()
     insert_product()
     print("Base de données Openfoodfacts remplie avec succès !")
 
