@@ -119,7 +119,7 @@ def print_product(product):
         Name : {} \n \
         Categories : {} \n \
         Nutri-score : {} \n \
-        Store : {} \n \
+        Stores : {} \n \
         URL : {}".format(product.name, product.category, product.nutri_score, product.stores, product.url))
     except TypeError:
         print("Désolé, il n'y a pas de substitut pour ce product...")
@@ -137,7 +137,7 @@ def ajout_backup(product, substitute):
         cursor.execute("""INSERT INTO Backup (produit_id, substitut_id) \
             VALUES (%s,%s)""", (product.id[0], substitute.id[0]))
         conn.commit()
-        print('Sauvergarde effectuée')
+        print('Sauvegarde effectuée')
     elif choix == 2:
         print('Non sauvegardé')
 
